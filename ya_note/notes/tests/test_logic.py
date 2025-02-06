@@ -21,7 +21,7 @@ class TestNoteCreation(TestCase):
             'title': 'Заголовок',
             'text': 'Текст',
         }
-    
+
     def test_create_note(self):
         users = (
             (self.client.post, 0),
@@ -74,13 +74,13 @@ class TestNoteEditDelete(TestCase):
             'text': 'Текст',
             'title': 'Заголовок'
         }
-    
+
     def test_author_delete_note(self):
         response = self.author_client.delete(self.delete_url)
         self.assertRedirects(response, self.note_url)
         notes_count = Note.objects.count()
         self.assertEqual(notes_count, 0)
-    
+
     def test_user_cant_delete_not_of_another_user(self):
         response = self.reader_client.delete(self.delete_url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
