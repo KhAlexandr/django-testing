@@ -1,4 +1,4 @@
-from pytest_lazyfixture import lazy_fixture as lf
+from pytest_lazy_fixtures import lf
 import pytest
 from http import HTTPStatus
 
