@@ -1,40 +1,35 @@
 from django.conf import settings
-from django.urls import reverse
 
 from news.forms import CommentForm
 
 
-def test_count_of_news_on_hompage(client, news_count):
-    url = reverse('news:home')
-    response = client.get(url)
-    object_list = response.context['object_list']
-    news_count = object_list.count()
-    assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
+def test_count_of_news_on_home_page(client, news_count, homepage_url):
+    response = client.get(homepage_url)
+    news = response.context['object_list']
+    assert news.count() == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-def test_news_order_on_homepage(client, news):
-    url = reverse('news:home')
-    response = client.get(url)
-    object_list = response.context['object_list']
-    all_news_date = [news.date for news in object_list]
+def test_news_order_on_homepage(client, news, homepage_url):
+    response = client.get(homepage_url)
+    news = response.context['object_list']
+    all_news_date = [news.date for news in news]
     assert all_news_date == sorted(all_news_date, reverse=True)
 
 
-def test_comment_order(client, news, comments, news_id_for_args):
-    response = client.get(reverse('news:detail', args=(news_id_for_args)))
+def test_comment_order(client, news, comments, detail_url):
+    response = client.get(detail_url)
     assert 'news' in response.context
-    sorted_date = sorted([comment.created for comment in comments])
-    assert [comment.created for comment in comments] == sorted_date
+    assert [
+        comment.created for comment in comments
+    ] == sorted([comment.created for comment in comments])
 
 
-def test_anonymous_client_has_no_form(client, news_id_for_args):
-    url = reverse('news:detail', args=(news_id_for_args))
-    response = client.get(url)
-    assert 'form' not in response.context
+def test_anonymous_client_has_no_form(client, detail_url):
+    assert 'form' not in client.get(detail_url).context
 
 
-def test_authorized_client_has_form(reader_client, news_id_for_args):
-    url = reverse('news:detail', args=(news_id_for_args))
-    response = reader_client.get(url)
-    assert 'form' in response.context
-    assert isinstance(response.context['form'], CommentForm)
+def test_authorized_client_has_form(reader_client, detail_url):
+    assert 'form' in reader_client.get(detail_url).context
+    assert isinstance(
+        reader_client.get(detail_url).context.get('form'), CommentForm
+    )

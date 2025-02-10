@@ -1,71 +1,30 @@
-from django.test import TestCase, Client
-from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from notes.models import Note
+from ya_note.notes.tests.base_class import BaseTestClass
+from notes.forms import NoteForm
 
 
 User = get_user_model()
 
 
-class TestNotesList(TestCase):
-    NOTES_LIST_URL = reverse('notes:list')
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.author = User.objects.create(username='Лев Толстой')
-        cls.reader = User.objects.create(username='Читатель')
-        cls.reader_client = Client()
-        cls.reader_client.force_login(cls.reader)
-        all_notes = [
-            Note(
-                title=f'Заметка{index}',
-                text='Просто текст.',
-                author=cls.author,
-                slug=f'note-{index}'
-            )
-            for index in range(5)
-        ]
-        Note.objects.bulk_create(all_notes)
+class TestNotesContent(BaseTestClass):
 
     def test_notes_list(self):
-        self.client.force_login(self.author)
-        response = self.client.get(self.NOTES_LIST_URL)
-        object_list = response.context['object_list']
-        self.assertIn(object_list[0], object_list)
+        response = self.auth_client.get(self.NOTES_LIST_URL)
+        notes = response.context['note_list']
+        self.assertIn(self.note, notes)
+        for note in notes:
+            self.assertContains(response, note.title)
+            self.assertContains(response, note.author)
+            self.assertContains(response, note.slug)
 
-    def test_reader_and_author_in_context_list(self):
-        users = (
-            (self.reader, 0),
-            (self.author, 5),
-        )
-        for name, number in users:
-            with self.subTest(name=name):
-                self.client.force_login(name)
-                response = self.client.get(self.NOTES_LIST_URL)
-                object_list = response.context['object_list']
-                self.assertEqual(len(object_list), number)
-
-
-class TestAddandEditNotes(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.author = User.objects.create(username='Николай Некрасов')
-        cls.notes = Note.objects.create(
-            title='Заметка',
-            text='Случайный текст',
-            author=cls.author
-        )
-
-    def test_form(self):
-        self.client.force_login(self.author)
+    def test_form_on_notes_edit_and_add_pages(self):
         urls = (
-            ('notes:edit', (self.notes.slug,)),
-            ('notes:add', None),
+            ('notes:edit', self.URL_EDIT_NOTE),
+            ('notes:add', self.URL_ADD_NOTE),
         )
-        for name, args in urls:
-            with self.subTest(name=name):
-                url = reverse(name, args=args)
-                response = self.client.get(url)
+        for url, url_name in urls:
+            with self.subTest(url=url):
+                response = self.auth_client.get(url_name)
                 self.assertIn('form', response.context)
+                self.assertIsInstance(response.context['form'], NoteForm)
