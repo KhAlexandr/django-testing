@@ -29,7 +29,6 @@ def test_anonymous_client_has_no_form(client, detail_url):
 
 
 def test_authorized_client_has_form(reader_client, detail_url):
-    assert 'form' in reader_client.get(detail_url).context
     assert isinstance(
         reader_client.get(detail_url).context.get('form'), CommentForm
     )

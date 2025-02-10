@@ -3,9 +3,10 @@ import pytest
 from datetime import timedelta
 
 from django.conf import settings
+from django.test import Client
 from django.utils import timezone
 from django.urls import reverse
-from django.test import Client
+
 
 from news.models import News, Comment
 
@@ -32,11 +33,6 @@ def author_client(author):
     client = Client()
     client.force_login(author)
     return client
-
-
-@pytest.fixture
-def client():
-    return Client()
 
 
 @pytest.fixture
@@ -70,21 +66,23 @@ def comment(author, news):
 
 
 @pytest.fixture
-def comments(author, news):
-    return [
-        Comment.objects.create(
+def comments(author, news, comment):
+    all_comments = []
+    for index in range(222):
+        comment = Comment.objects.create(
             news=news,
             author=author,
-            text=f'Текст комментария{index}',
-            created=timezone.now() + timedelta(days=index)
+            text=f'Текст комментария {index}'
         )
-        for index in range(222)
-    ]
+        comment.created = timezone.now() + timedelta(days=index)
+        comment.save()
+        all_comments.append(comment)
+    return all_comments
 
 
 @pytest.fixture
 def homepage_url():
-    return reverse('news:home')
+    return reverse('news:home', args=None)
 
 
 @pytest.fixture
@@ -109,17 +107,17 @@ def edit_url(comment):
 
 @pytest.fixture
 def login_url():
-    return reverse('users:login')
+    return reverse('users:login', args=None)
 
 
 @pytest.fixture
 def logout_url():
-    return reverse('users:logout')
+    return reverse('users:logout', args=None)
 
 
 @pytest.fixture
 def signup_url():
-    return reverse('users:signup')
+    return reverse('users:signup', args=None)
 
 
 @pytest.fixture
@@ -128,8 +126,10 @@ def delete_url(comment):
 
 
 @pytest.fixture
-def excepted_url(login_url, delete_url, edit_url):
-    excepted_url = {}
-    for url in [delete_url, edit_url]:
-        excepted_url[url] = f'{login_url}?next={url}'
-    return excepted_url
+def excepted_url_delete(login_url, delete_url):
+    return f'{login_url}?next={delete_url}'
+
+
+@pytest.fixture
+def excepted_url_edit(login_url, edit_url):
+    return f'{login_url}?next={edit_url}'

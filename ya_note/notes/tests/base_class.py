@@ -8,20 +8,6 @@ from notes.models import Note
 User = get_user_model()
 
 
-class UrlManager:
-    NOTES_LIST_URL = reverse('notes:list', args=None)
-    URL_HOME = reverse('notes:home', args=None)
-    URL_LOGIN = reverse('users:login', args=None)
-    URL_LOGOUT = reverse('users:logout', args=None)
-    URL_SIGN_UP = reverse('users:signup', args=None)
-    NOTE_SLUG = 'zametka'
-    URL_EDIT_NOTE = reverse('notes:edit', args=(NOTE_SLUG,))
-    URL_ADD_NOTE = reverse('notes:add', args=None)
-    URL_SUCCESS = reverse('notes:success', args=None)
-    URL_DELETE = reverse('notes:delete', args=(NOTE_SLUG,))
-    URL_DETAIL = reverse('notes:detail', args=(NOTE_SLUG,))
-
-
 class BaseTestClass(TestCase):
     NOTES_LIST_URL = reverse('notes:list', args=None)
     URL_HOME = reverse('notes:home', args=None)
@@ -46,12 +32,11 @@ class BaseTestClass(TestCase):
         cls.note = Note.objects.create(
             title='Заметка',
             text='Текст',
-            slug=UrlManager.NOTE_SLUG,
+            slug=BaseTestClass.NOTE_SLUG,
             author=cls.user,
         )
         cls.form_data = {
-            'title': cls.note.title,
-            'text': cls.note.text,
-            'slug': cls.note.slug,
-            'author': cls.note.author,
+            'title': 'Заметки',
+            'text': 'Просто текст',
+            'slug': 'note-slug',
         }
