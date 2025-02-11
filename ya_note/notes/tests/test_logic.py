@@ -51,6 +51,7 @@ class TestNoteCreation(BaseTestClass):
         self.assertRedirects(response, UrlManager.URL_SUCCESS)
         final_count = Note.objects.count()
         self.assertEqual(final_count, first_count - 1)
+        self.assertFalse(Note.objects.filter(id=self.note.id).exists())
 
     def test_user_cant_delete_note_of_another_user(self):
         notes = set(Note.objects.all())
