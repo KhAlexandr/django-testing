@@ -8,6 +8,10 @@ User = get_user_model()
 
 OK = HTTPStatus.OK
 
+NOT_FOUND = HTTPStatus.NOT_FOUND
+
+FOUND = HTTPStatus.FOUND
+
 
 class TestRoutes(BaseTestClass):
 
@@ -25,21 +29,21 @@ class TestRoutes(BaseTestClass):
             (UrlManager.NOTES_LIST_URL, author, OK),
             (UrlManager.URL_EDIT_NOTE, author, OK),
             (UrlManager.URL_DELETE, author, OK),
-            (UrlManager.URL_EDIT_NOTE, reader, HTTPStatus.NOT_FOUND),
-            (UrlManager.URL_DELETE, reader, HTTPStatus.NOT_FOUND),
-            (UrlManager.URL_DETAIL, reader, HTTPStatus.NOT_FOUND),
+            (UrlManager.URL_EDIT_NOTE, reader, NOT_FOUND),
+            (UrlManager.URL_DELETE, reader, NOT_FOUND),
+            (UrlManager.URL_DETAIL, reader, NOT_FOUND),
             (UrlManager.URL_LOGIN, reader, OK),
             (UrlManager.URL_LOGOUT, reader, OK),
             (UrlManager.URL_SIGN_UP, reader, OK),
             (UrlManager.URL_LOGIN, author, OK),
             (UrlManager.URL_LOGOUT, author, OK),
             (UrlManager.URL_SIGN_UP, author, OK),
-            (UrlManager.URL_ADD_NOTE, anon, HTTPStatus.FOUND),
-            (UrlManager.URL_DETAIL, anon, HTTPStatus.FOUND),
-            (UrlManager.URL_SUCCESS, anon, HTTPStatus.FOUND),
-            (UrlManager.URL_DELETE, anon, HTTPStatus.FOUND),
-            (UrlManager.URL_EDIT_NOTE, anon, HTTPStatus.FOUND),
-            (UrlManager.NOTES_LIST_URL, anon, HTTPStatus.FOUND)
+            (UrlManager.URL_ADD_NOTE, anon, FOUND),
+            (UrlManager.URL_DETAIL, anon, FOUND),
+            (UrlManager.URL_SUCCESS, anon, FOUND),
+            (UrlManager.URL_DELETE, anon, FOUND),
+            (UrlManager.URL_EDIT_NOTE, anon, FOUND),
+            (UrlManager.NOTES_LIST_URL, anon, FOUND)
         )
         for url, client, status in urls:
             with self.subTest(name=url, client=client, status=status):
