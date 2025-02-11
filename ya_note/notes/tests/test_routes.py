@@ -6,63 +6,40 @@ from ya_note.notes.tests.base_class import BaseTestClass, UrlManager
 
 User = get_user_model()
 
+OK = HTTPStatus.OK
+
 
 class TestRoutes(BaseTestClass):
 
     def test_pages_availability(self):
+        anon = self.client
+        author = self.auth_client
+        reader = self.reader_client
         urls = (
-            (UrlManager.URL_HOME, self.client, HTTPStatus.OK),
-            (UrlManager.URL_LOGIN, self.client, HTTPStatus.OK),
-            (UrlManager.URL_LOGOUT, self.client, HTTPStatus.OK),
-            (UrlManager.URL_SIGN_UP, self.client, HTTPStatus.OK),
-            (UrlManager.URL_ADD_NOTE, self.auth_client, HTTPStatus.OK),
-            (UrlManager.URL_SUCCESS, self.auth_client, HTTPStatus.OK),
-            (UrlManager.NOTES_LIST_URL, self.auth_client, HTTPStatus.OK),
-            (UrlManager.URL_EDIT_NOTE, self.auth_client, HTTPStatus.OK),
-            (UrlManager.URL_DELETE, self.auth_client, HTTPStatus.OK),
-            (
-                UrlManager.URL_EDIT_NOTE,
-                self.reader_client,
-                HTTPStatus.NOT_FOUND
-            ),
-            (UrlManager.URL_DELETE, self.reader_client, HTTPStatus.NOT_FOUND),
-            (UrlManager.URL_DETAIL, self.reader_client, HTTPStatus.NOT_FOUND),
-            (UrlManager.URL_LOGIN, self.reader_client, HTTPStatus.OK),
-            (UrlManager.URL_LOGOUT, self.reader_client, HTTPStatus.OK),
-            (UrlManager.URL_SIGN_UP, self.reader_client, HTTPStatus.OK),
-            (UrlManager.URL_LOGIN, self.auth_client, HTTPStatus.OK),
-            (UrlManager.URL_LOGOUT, self.auth_client, HTTPStatus.OK),
-            (UrlManager.URL_SIGN_UP, self.auth_client, HTTPStatus.OK),
-            (
-                UrlManager.REDIRECT_URL_ADD_NOTE,
-                self.client,
-                HTTPStatus.OK
-            ),
-            (
-                UrlManager.REDIRECT_URL_DETAIL,
-                self.client,
-                HTTPStatus.OK
-            ),
-            (
-                UrlManager.REDIRECT_URL_SUCCESS,
-                self.client,
-                HTTPStatus.OK
-            ),
-            (
-                UrlManager.REDIRECT_URL_DELETE,
-                self.client,
-                HTTPStatus.OK
-            ),
-            (
-                UrlManager.REDIRECT_URL_EDIT,
-                self.client,
-                HTTPStatus.OK
-            ),
-            (
-                UrlManager.REDIRECT_URL_NOTES_LIST,
-                self.client,
-                HTTPStatus.OK
-            )
+            (UrlManager.URL_HOME, anon, OK),
+            (UrlManager.URL_LOGIN, anon, OK),
+            (UrlManager.URL_LOGOUT, anon, OK),
+            (UrlManager.URL_SIGN_UP, anon, OK),
+            (UrlManager.URL_ADD_NOTE, author, OK),
+            (UrlManager.URL_SUCCESS, author, OK),
+            (UrlManager.NOTES_LIST_URL, author, OK),
+            (UrlManager.URL_EDIT_NOTE, author, OK),
+            (UrlManager.URL_DELETE, author, OK),
+            (UrlManager.URL_EDIT_NOTE, reader, HTTPStatus.NOT_FOUND),
+            (UrlManager.URL_DELETE, reader, HTTPStatus.NOT_FOUND),
+            (UrlManager.URL_DETAIL, reader, HTTPStatus.NOT_FOUND),
+            (UrlManager.URL_LOGIN, reader, OK),
+            (UrlManager.URL_LOGOUT, reader, OK),
+            (UrlManager.URL_SIGN_UP, reader, OK),
+            (UrlManager.URL_LOGIN, author, OK),
+            (UrlManager.URL_LOGOUT, author, OK),
+            (UrlManager.URL_SIGN_UP, author, OK),
+            (UrlManager.URL_ADD_NOTE, anon, HTTPStatus.FOUND),
+            (UrlManager.URL_DETAIL, anon, HTTPStatus.FOUND),
+            (UrlManager.URL_SUCCESS, anon, HTTPStatus.FOUND),
+            (UrlManager.URL_DELETE, anon, HTTPStatus.FOUND),
+            (UrlManager.URL_EDIT_NOTE, anon, HTTPStatus.FOUND),
+            (UrlManager.NOTES_LIST_URL, anon, HTTPStatus.FOUND)
         )
         for url, client, status in urls:
             with self.subTest(name=url, client=client, status=status):

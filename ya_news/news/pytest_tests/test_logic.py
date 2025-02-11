@@ -5,6 +5,7 @@ from pytest_django.asserts import assertRedirects
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
 
+
 FORM_DATA = {
     'text': 'Новый текст',
 }
@@ -48,11 +49,11 @@ def test_author_can_delete_comment(
 def test_user_cant_delete_comment_of_another_user(
     reader_client, comment_delete_url, news, comment, author
 ):
+    comments = set(Comment.objects.all())
     assert reader_client.delete(
         comment_delete_url
     ).status_code == HTTPStatus.NOT_FOUND
-    comment_count = Comment.objects.count()
-    assert comment_count == 1
+    assert comments == set(Comment.objects.all())
 
 
 def test_author_can_edit_comment(
@@ -66,11 +67,13 @@ def test_author_can_edit_comment(
 
 
 def test_user_cant_edit_comment_of_another_user(
-    reader_client, comment_delete_url, comment
+    reader_client, edit_url, comment
 ):
-    initial_comment = set(Comment.objects.all())
-    assert reader_client.delete(
-        comment_delete_url
-    ).status_code == HTTPStatus.NOT_FOUND
-    final_comment = set(Comment.objects.all())
-    assert initial_comment == final_comment
+    comments = set(Comment.objects.all())
+    reader_client.post(edit_url, data=FORM_DATA)
+    final_comments = set(Comment.objects.all())
+    assert comments == final_comments
+    new_comment = final_comments.pop()
+    assert new_comment.text == comment.text
+    assert new_comment.news == comment.news
+    assert new_comment.author == comment.author
