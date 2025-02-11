@@ -1,9 +1,9 @@
 from http import HTTPStatus
 
+from pytils.translit import slugify
+
 from notes.models import Note
 from .base_class import BaseTestClass, UrlManager
-
-from pytils.translit import slugify
 
 
 class TestNoteCreation(BaseTestClass):
