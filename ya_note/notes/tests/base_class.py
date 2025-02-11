@@ -7,17 +7,18 @@ from notes.models import Note
 
 User = get_user_model()
 
+NOTE_SLUG = 'zametka'
+
 
 class UrlManager:
     NOTES_LIST_URL = reverse('notes:list')
-    URL_HOME = reverse('notes:home', args=None)
-    URL_LOGIN = reverse('users:login', args=None)
-    URL_LOGOUT = reverse('users:logout', args=None)
-    URL_SIGN_UP = reverse('users:signup', args=None)
-    NOTE_SLUG = 'zametka'
+    URL_HOME = reverse('notes:home')
+    URL_LOGIN = reverse('users:login')
+    URL_LOGOUT = reverse('users:logout')
+    URL_SIGN_UP = reverse('users:signup')
     URL_EDIT_NOTE = reverse('notes:edit', args=(NOTE_SLUG,))
-    URL_ADD_NOTE = reverse('notes:add', args=None)
-    URL_SUCCESS = reverse('notes:success', args=None)
+    URL_ADD_NOTE = reverse('notes:add')
+    URL_SUCCESS = reverse('notes:success')
     URL_DELETE = reverse('notes:delete', args=(NOTE_SLUG,))
     URL_DETAIL = reverse('notes:detail', args=(NOTE_SLUG,))
     REDIRECT_URL_ADD_NOTE = f'{URL_LOGIN}?next={URL_ADD_NOTE}'
@@ -41,7 +42,7 @@ class BaseTestClass(TestCase):
         cls.note = Note.objects.create(
             title='Заметка',
             text='Текст',
-            slug=UrlManager.NOTE_SLUG,
+            slug=NOTE_SLUG,
             author=cls.user,
         )
         cls.form_data = {

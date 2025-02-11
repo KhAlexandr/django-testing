@@ -32,13 +32,12 @@ READER = lf('reader_client')
         (DELETE_URL, AUTHOR, HTTPStatus.OK),
         (EDIT_URL, READER, HTTPStatus.NOT_FOUND),
         (DELETE_URL, READER, HTTPStatus.NOT_FOUND),
-        (EXCEPTED_URL_DELETE, CLIENT, HTTPStatus.OK),
-        (EXCEPTED_URL_EDIT, CLIENT, HTTPStatus.OK),
+        (DELETE_URL, CLIENT, HTTPStatus.FOUND),
+        (EDIT_URL, CLIENT, HTTPStatus.FOUND),
     ),
 )
 def test_available_pages(url, user, status, news):
-    response = user.get(url)
-    assert response.status_code == status
+    assert user.get(url).status_code == status
 
 
 @pytest.mark.parametrize(

@@ -19,9 +19,11 @@ def test_news_order_on_homepage(client, news, homepage_url):
 def test_comment_order(client, news, comments, detail_url):
     response = client.get(detail_url)
     assert 'news' in response.context
+    news = response.context['news']
+    all_comments = news.comment_set.all()
     assert [
-        comment.created for comment in comments
-    ] == sorted([comment.created for comment in comments])
+        comment.created for comment in all_comments
+    ] == sorted([comment.created for comment in all_comments])
 
 
 def test_anonymous_client_has_no_form(client, detail_url):

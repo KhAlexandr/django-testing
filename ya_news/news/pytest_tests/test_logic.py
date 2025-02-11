@@ -54,23 +54,12 @@ def test_user_cant_delete_comment_of_another_user(
     comment_count = Comment.objects.count()
     assert comment_count == 1
 
-    new_comment = Comment.objects.get(
-        created=comment.created
-    )
-
-    assert comment == new_comment
-    assert new_comment.news == comment.news
-    assert new_comment.author == comment.author
-    assert new_comment.text == comment.text
-
 
 def test_author_can_edit_comment(
     author_client, edit_url, comment, comment_url
 ):
     assertRedirects(author_client.post(edit_url, data=FORM_DATA), comment_url)
-    new_comment = Comment.objects.get(
-        created=comment.created,
-    )
+    new_comment = set(Comment.objects.all()).pop()
     assert new_comment.text == FORM_DATA['text']
     assert new_comment.news == comment.news
     assert new_comment.author == comment.author
@@ -79,12 +68,9 @@ def test_author_can_edit_comment(
 def test_user_cant_edit_comment_of_another_user(
     reader_client, comment_delete_url, comment
 ):
+    initial_comment = set(Comment.objects.all())
     assert reader_client.delete(
         comment_delete_url
     ).status_code == HTTPStatus.NOT_FOUND
-    new_comment = Comment.objects.get(
-        created=comment.created,
-    )
-    assert new_comment.text == comment.text
-    assert new_comment.news == comment.news
-    assert new_comment.author == comment.author
+    final_comment = set(Comment.objects.all())
+    assert initial_comment == final_comment
