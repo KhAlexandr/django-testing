@@ -3,7 +3,6 @@ import pytest
 
 from http import HTTPStatus
 
-
 from pytest_django.asserts import assertRedirects
 
 
@@ -16,21 +15,25 @@ EDIT_URL = lf('edit_url')
 DELETE_URL = lf('delete_url')
 EXCEPTED_URL_DELETE = lf('excepted_url_delete')
 EXCEPTED_URL_EDIT = lf('excepted_url_edit')
-USER = lf('client')
+CLIENT = lf('client')
+AUTHOR = lf('author_client')
+READER = lf('reader_client')
 
 
 @pytest.mark.parametrize(
     'url, user, status',
     (
-        (HOME_URL, USER, HTTPStatus.OK),
-        (DETAILS_URL, USER, HTTPStatus.OK),
-        (LOGIN_URL, USER, HTTPStatus.OK),
-        (LOGOUT_URL, USER, HTTPStatus.OK),
-        (SIGNUP_URL, USER, HTTPStatus.OK),
-        (EDIT_URL, lf('author_client'), HTTPStatus.OK),
-        (DELETE_URL, lf('author_client'), HTTPStatus.OK),
-        (EDIT_URL, lf('reader_client'), HTTPStatus.NOT_FOUND),
-        (DELETE_URL, lf('reader_client'), HTTPStatus.NOT_FOUND),
+        (HOME_URL, CLIENT, HTTPStatus.OK),
+        (DETAILS_URL, CLIENT, HTTPStatus.OK),
+        (LOGIN_URL, CLIENT, HTTPStatus.OK),
+        (LOGOUT_URL, CLIENT, HTTPStatus.OK),
+        (SIGNUP_URL, CLIENT, HTTPStatus.OK),
+        (EDIT_URL, AUTHOR, HTTPStatus.OK),
+        (DELETE_URL, AUTHOR, HTTPStatus.OK),
+        (EDIT_URL, READER, HTTPStatus.NOT_FOUND),
+        (DELETE_URL, READER, HTTPStatus.NOT_FOUND),
+        (EXCEPTED_URL_DELETE, CLIENT, HTTPStatus.OK),
+        (EXCEPTED_URL_EDIT, CLIENT, HTTPStatus.OK),
     ),
 )
 def test_available_pages(url, user, status, news):
