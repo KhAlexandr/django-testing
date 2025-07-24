@@ -9,7 +9,10 @@ from news.models import Comment
 FORM_DATA = {
     'text': 'Новый текст',
 }
-BAD_WORDS_DATA = {'text': f'Начало текста, {BAD_WORDS[0]}, конец текста'}
+BAD_WORDS_DATA = [
+    {'text': f'Начало текста, {BAD_WORD}, конец текста'}
+    for BAD_WORD in BAD_WORDS
+]
 
 
 def test_anonymous_user_cant_create_comment(
@@ -33,8 +36,9 @@ def test_user_can_create_comment(
 
 
 def test_user_cant_use_bad_words(author_client, detail_url):
-    response = author_client.post(detail_url, data=BAD_WORDS_DATA)
-    assert response.context['form'].errors['text'][0] == WARNING
+    for bad_word_data in BAD_WORDS_DATA:
+        response = author_client.post(detail_url, data=bad_word_data)
+        assert response.context['form'].errors['text'][0] == WARNING
     assert Comment.objects.count() == 0
 
 
@@ -48,7 +52,7 @@ def test_author_can_delete_comment(
 
 def test_user_cant_delete_comment_of_another_user(
     reader_client, comment_delete_url, news, comment, author
-):
+, comments):
     comments = set(Comment.objects.all())
     assert reader_client.delete(
         comment_delete_url
